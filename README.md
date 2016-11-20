@@ -5,7 +5,8 @@ Common usage:
 
 `./getalltextfromuser.py json/chat_name.jsonl username_without_at_sign | ./mostcommonphrases.py | less`
 
-Gives an output like: ![example of most common phrases output](/examples/phrases.jpg?raw=true)
+Gives an output like:
+![example of most common phrases output](/examples/phrases.jpg?raw=true)
 
 `./phraseovertime.py chat_name.jsonl phrase`
 
