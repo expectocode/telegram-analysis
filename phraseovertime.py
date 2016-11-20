@@ -32,13 +32,11 @@ for message in alldata:
     except Exception:
         pass
 
-uniqDates = sorted(datesRaw)
+uniqDates = sorted(set(datesRaw))
 for date in uniqDates:
     datesFrequency.append(datesRaw.count(date))
 #plt.plot(counts)
 plt.plot(uniqDates, datesFrequency)
-plt.title("usage of \"" + keyword + "\" in " + filename[:-6])
+plt.title("usage of \"" + keyword + "\" in " + filename[5:-6])
+#note that filename slicing is entirely dependent on your dir structure. this is for me. likely source of problems for other users.
 plt.show()
-#Counter({'apple': 3, 'egg': 2, 'banana': 1})
-
-#print(data)
