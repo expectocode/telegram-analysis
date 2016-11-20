@@ -3,33 +3,37 @@
 #TODO: improve logic
 import argparse
 from json import loads
-import matplotlib.pyplot as plt
 import datetime
+from os import path
+import matplotlib.pyplot as plt
 
-dt=datetime.date
+dt = datetime.date
 parser = argparse.ArgumentParser(description="Visualise the usage of a phrase in a chat over time")
 parser.add_argument('filename', help='the json file (chat log) to analyse')
 parser.add_argument('keyword', help='the keyword to search for')
 
-args=parser.parse_args()
-filename=args.filename
-keyword=args.keyword
+args = parser.parse_args()
+filename = args.filename
+keyword = args.keyword
 
-file = open(filename, 'r')
+jsonfile = open(filename, 'r')
 
-alldata=[]
-datesRaw=[]
-datesFrequency=[]
-#messages
-for line in file.readlines():
-    alldata.append(loads(line))
+alldata = []
+datesRaw = []
+datesFrequency = []
+#for line in jsonfile:
+#    alldata.append(loads(line))
+
+alldata = [loads(line) for line in jsonfile]
+
+jsonfile.close()
 
 for message in alldata:
     try:
         if keyword in message["text"]:
             #dates.append([message["date"], message["text"]])
             datesRaw.append(dt.fromtimestamp(message["date"]))
-    except Exception:
+    except KeyError:
         pass
 
 uniqDates = sorted(set(datesRaw))
@@ -37,6 +41,6 @@ for date in uniqDates:
     datesFrequency.append(datesRaw.count(date))
 #plt.plot(counts)
 plt.plot(uniqDates, datesFrequency)
-plt.title("usage of \"" + keyword + "\" in " + filename[5:-6])
-#note that filename slicing is entirely dependent on your dir structure. this is for me. likely source of problems for other users.
+plt.title("usage of \"{}\" in {}".format(keyword, path.split(filename)[-1][:-6])) #file name minus extension jsonl
+#note that filename slicing is dependent on the extension being .jsonl
 plt.show()
