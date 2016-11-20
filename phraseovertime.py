@@ -28,23 +28,26 @@ def main():
 
         counter = defaultdict(list)
         for event in events:
-
             if "text" in event:
-                day = date.fromtimestamp(event["date"])
-                counter[day].append("text" in event and keyword in event["text"])
-#if args.insensitive:
-            #    if "text" in event:
-            #        day = date.fromtimestamp(event["date"])
-            #        counter[day].append("text" in event and keyword in event["text"].lower())
-
-            #else:
+                if args.insensitive:
+                    if "text" in event:
+                        day = date.fromtimestamp(event["date"])
+                        counter[day].append("text" in event and keyword in event["text"].lower())
+                else:
+                    day = date.fromtimestamp(event["date"])
+                    counter[day].append("text" in event and keyword in event["text"])
 
     _, filename = path.split(filepath)
     filename, _ = path.splitext(filename)
 
     frequencies = {key: l.count(True)/l.count(False) * 100 for key, l in counter.items()}
     plt.plot(*zip(*sorted(frequencies.items())))
-    plt.title("usage of \"{}\" in {}".format(keyword, filename)) #file name minus extension jsonl
+    if args.insensitive:
+        postfix=", case-insensitive"
+    else:
+        postfix=""
+    plt.title("usage of \"{}\" in {}{}".format(keyword, filename, postfix)) #file name minus extension jsonl"
+
     plt.ylabel("Percentage of messages containing \"{}\"".format(keyword), size=14)
     plt.show()
 
