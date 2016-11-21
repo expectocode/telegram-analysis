@@ -16,42 +16,48 @@ def main():
     parser = argparse.ArgumentParser(
             description="Visualise the usage of a phrase in a chat over time")
     parser.add_argument('filepath', help='path to the json file (chat log) to analyse')
-    parser.add_argument('-i', '--insensitive', help='make the phrase search case insensitive', action='store_true')
+    parser.add_argument('-c', '--case-sensitive', help='make the phrase search case sensitive', action='store_true')
     parser.add_argument('-o', '--output-folder', help='output the figure to image file in this folder')
-    parser.add_argument('keyword', help='the keyword to search for (note that it must be at the end for multiple words)')
+    parser.add_argument('keywords', help='the keyword(s) to search for (note that these must be at the end of the argument list)', nargs=argparse.REMAINDER)
 
     args = parser.parse_args()
     filepath = args.filepath
-    keyword = args.keyword
+    keywords = args.keywords
     savefolder = args.output_folder
 
     with open(filepath, 'r') as jsonfile:
         events = (loads(line) for line in jsonfile)
-
-        counter = defaultdict(list)
+        counters = [defaultdict(list) for keyword in keywords]
         for event in events:
-            if "text" in event:
-                if args.insensitive:
-                    if "text" in event:
+            for keyword in keywords:
+                if "text" in event:
+                    if args.case_sensitive:
+                        if "text" in event:
+                            day = date.fromtimestamp(event["date"])
+                            counters[keywords.index(keyword)][day].append("text" in event and keyword in event["text"])
+                    else:
                         day = date.fromtimestamp(event["date"])
-                        counter[day].append("text" in event and keyword in event["text"].lower())
-                else:
-                    day = date.fromtimestamp(event["date"])
-                    counter[day].append("text" in event and keyword in event["text"])
+                        counters[keywords.index(keyword)][day].append("text" in event and keyword in event["text"].lower())
 
     _, filename = path.split(filepath)
     filename, _ = path.splitext(filename)
 
-    frequencies = {key: l.count(True)/l.count(False) * 100 for key, l in counter.items()}
+#    frequencies = [{key: l.count(True)/l.count(False) * 100 for key, l in counter.items()}]
+    frequenciesList = []
     plt.figure(figsize=(17,10))
-    plt.plot(*zip(*sorted(frequencies.items())))
-    if args.insensitive:
-        postfix=", case-insensitive"
-    else:
-        postfix=""
-    plt.title("usage of \"{}\" in {}{}".format(keyword, filename, postfix)) #file name minus extension jsonl"
+    for x in range(0, len(keywords)):
+        frequenciesList.append({key: l.count(True)/l.count(False) * 100 for key, l in counters[x].items()})
+        plt.plot(*zip(*sorted(frequenciesList[x].items())))
 
-    plt.ylabel("Percentage of messages containing \"{}\"".format(keyword), size=14)
+    plt.legend(keywords)
+    if args.case_sensitive:
+        postfix=", case sensitive"
+    else:
+        postfix=", case insensitive"
+    plt.title("usage of {} in {}{}".format(keywords, filename, postfix)) #file name minus extension jsonl"
+
+#    plt.ylabel("Percentage of messages containing \"{}\"".format(keyword), size=14)
+    plt.ylabel("Percentage of messages containing keywords".format(keyword), size=14)
     if savefolder is not None:
         plt.savefig("{}/{}_in_{}.png".format(savefolder, keyword, filename))
     else:
