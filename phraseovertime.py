@@ -47,9 +47,9 @@ def main():
     plt.figure(figsize=(14,8)) #make a decent default size.
     for x in range(0, len(keywords)): #make a frequencies thing for each keyword, and plot each one onto the plot
         frequenciesList.append({key: l.count(True)/len(l) * 100 for key, l in counters[x].items()}) #find frequency of keyword use per date
-
         plt.plot(*zip(*sorted(frequenciesList[x].items())))
-        plt.grid() #because i think it looks better with the grid
+
+    plt.grid() #because i think it looks better with the grid
 
     plt.legend(keywords)
     if args.case_sensitive: #pretty self explanatory. this is added to the title.
