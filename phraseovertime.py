@@ -32,9 +32,8 @@ def main():
             if "text" in event: #if the event has the json tag "text" ie if it's a text message then search for given keywords. there is no else.
                 for keyword in keywords:
                     if args.case_sensitive: #case sens or insens search for the keyword
-                        if "text" in event:
-                            day = date.fromtimestamp(event["date"])
-                            counters[keywords.index(keyword)][day].append("text" in event and keyword in event["text"])
+                        day = date.fromtimestamp(event["date"])
+                        counters[keywords.index(keyword)][day].append("text" in event and keyword in event["text"])
                     else:
                         day = date.fromtimestamp(event["date"])
                         counters[keywords.index(keyword)][day].append("text" in event and keyword in event["text"].lower())
@@ -47,7 +46,8 @@ def main():
     frequenciesList = []
     plt.figure(figsize=(14,8)) #make a decent default size.
     for x in range(0, len(keywords)): #make a frequencies thing for each keyword, and plot each one onto the plot
-        frequenciesList.append({key: l.count(True)/l.count(False) * 100 for key, l in counters[x].items()}) #find frequency of keyword use per date
+        frequenciesList.append({key: l.count(True)/len(l) * 100 for key, l in counters[x].items()}) #find frequency of keyword use per date
+
         plt.plot(*zip(*sorted(frequenciesList[x].items())))
         plt.grid() #because i think it looks better with the grid
 
@@ -60,7 +60,6 @@ def main():
 
 #    plt.ylabel("Percentage of messages containing \"{}\"".format(keyword), size=14)
     plt.ylabel("Percentage of messages containing keywords", size=14)
-    #not sure if it's really a percentage like it says, i get values over over 100?!?
     if savefolder is not None: #if there is a given folder to save the figure in, save it there
         keywords_string = ""
         for keyword in keywords:
