@@ -53,6 +53,10 @@ def main():
         for chat in filenames:
             chats_string+=chat
             chats_string+="_"
+
+        if len(chats_string) > 200:#file name likely to be so long as to cause issues
+            chats_string = input("This graph is going to have a very long file name. Please enter a custom name(no need to add an extension): ")
+
         plt.savefig("{}/activity_in_{}.png".format(savefolder, chats_string))
     else: #if a save folder was not specified, just open a window to display graph
         plt.show()
