@@ -14,10 +14,14 @@ def main():
     main function
     """
     parser = argparse.ArgumentParser(description="analyse a json output of a telegram backup utility")
+    parser.add_argument(
+            '-o', '--output-folder',
+            help='output the figure to image file in this folder')
     parser.add_argument('filepath', help='the json file to analyse')
 
     args = parser.parse_args()
     filepath = args.filepath
+    savefolder = args.output_folder
 
     _, filename = path.split(filepath)
     filename, _ = path.splitext(filename)
@@ -38,7 +42,7 @@ def main():
     trimmedCounter = defaultdict(int)
 
     #find percentile to start adding people to "other" at
-    percentile = total_datapoints / 80
+    percentile = total_datapoints / 80 #anyone who contributes less than 1.125 percent of chars?
 
     for person, frequency in counter.items():
         if frequency < percentile: # <3
@@ -53,11 +57,18 @@ def main():
 
     plt.figure(figsize=(12,8))
     plt.title("Most active users in {} by chars sent".format(filename), y=1.05)
-    plt.pie(freqList[1], labels=freqList[0], startangle=270)
+    plt.pie(freqList[1], labels=freqList[0], startangle=135)
 #    plt.set_lw(10)
     plt.axis('equal')
+    #so it plots as a circle
 
-    plt.show()
+    if savefolder is not None:
+    #if there is a given folder to save the figure in, save it there
+        plt.savefig("{}/Most active users in {}.png".format(savefolder, filename))
+    else:
+    #if a save folder was not specified, just open a window to display graph
+        plt.show()
+
 #    print(type(*sorted(counter.items())))
  #   plt.pie(*zip(*sorted(counter.items())))
 

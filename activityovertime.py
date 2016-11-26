@@ -65,7 +65,8 @@ def main():
 
     plt.ylabel("Activity level (events per day)", size=14)
 
-    if savefolder is not None: #if there is a given folder to save the figure in, save it there
+    if savefolder is not None:
+    #if there is a given folder to save the figure in, save it there
         chats_string = ""
         for chat in filenames:
             chats_string+=chat
