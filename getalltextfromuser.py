@@ -1,36 +1,30 @@
 #!/usr/bin/env python3
+"""
+A program to extract all text sent by a particular user from a Telegram chat log which is in json form
+"""
 import argparse
 from json import loads
 
-parser = argparse.ArgumentParser(description="analyse a json output of telegram backup utility")
-parser.add_argument('filename', help='the json file to analyse')
-parser.add_argument('username', help='the username of the person whose text you want')
+def main():
 
-args=parser.parse_args()
-filename = args.filename
-username = args.username
+    parser = argparse.ArgumentParser(
+        description="Extract raw text sent by a user from a json telegram chat log")
+    parser.add_argument(
+        'filepath', help='the json file to analyse')
+    parser.add_argument(
+        'username', help='the username of the person whose text you want')
 
-#print(loads(test_json)[0]["text"])
-#0 is the index of the load in the loads
-#text is the json thing
+    args=parser.parse_args()
+    filepath = args.filepath
+    username = args.username
 
-file = open(filename,'r')
-data = []
+    with open(filepath, 'r') as jsonfile:
+        events = (loads(line) for line in jsonfile)
+        for event in events:
+            if "from" and "text" in event:
+                if "username" in event["from"]:
+                    if event["from"]["username"] == username:
+                        print(event["text"])
 
-for line in file.readlines():
-    data.append(loads(line))
-
-#print(data[0]["text"])
-
-data.reverse()
-
-for message in data:
-    try:
-        if message["from"]["username"] == username:
-            print(message["text"])
-
-    except Exception:
-        pass
-
-#print(data)
-file.close()
+if __name__ == "__main__":
+    main()

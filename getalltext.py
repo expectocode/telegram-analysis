@@ -1,33 +1,25 @@
 #!/usr/bin/env python3
+"""
+A program to extract raw text from Telegram chat log which is in json form"
+"""
 import argparse
 from json import loads
 
-parser = argparse.ArgumentParser(description="analyse a json output of telegram backup utility")
-parser.add_argument('filename', help='the json file to analyse')
+def main():
 
-args=parser.parse_args()
-filename = args.filename
+    parser = argparse.ArgumentParser(
+            description="analyse a json output of telegram backup utility")
+    parser.add_argument('filepath', help='the json file to analyse')
 
-#print(loads(test_json)[0]["text"])
-#0 is the index of the load in the loads
-#text is the json thing
+    args=parser.parse_args()
+    filepath = args.filepath
 
-file = open(filename,'r')
-data = []
+    with open(filepath, 'r') as jsonfile:
+        events = (loads(line) for line in jsonfile)
+        for event in events:
+            if "from" and "text" in event:
+            #do i need the "from" here?
+                print(event["text"])
 
-for line in file.readlines():
-    data.append(loads(line))
-
-#print(data[0]["text"])
-
-data.reverse()
-
-for message in data:
-    try:
-            print(message["text"])
-
-    except Exception:
-        pass
-
-#print(data)
-file.close()
+if __name__ == "__main__":
+    main()
