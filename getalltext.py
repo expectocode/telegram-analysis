@@ -17,8 +17,9 @@ def main():
     with open(filepath, 'r') as jsonfile:
         events = (loads(line) for line in jsonfile)
         for event in events:
-            if "from" and "text" in event:
-            #do i need the "from" here?
+            #check the event is the sort we're looking for
+            if "from" in event and "text" in event:
+                #do i need the "from" here?
                 print(event["text"])
 
 if __name__ == "__main__":

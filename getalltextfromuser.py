@@ -21,8 +21,10 @@ def main():
     with open(filepath, 'r') as jsonfile:
         events = (loads(line) for line in jsonfile)
         for event in events:
-            if "from" and "text" in event:
+        #check the event is the sort we're looking for
+            if "from" in event and "text" in event:
                 if "username" in event["from"]:
+                    #do i need "from" here?
                     if event["from"]["username"] == username:
                         print(event["text"])
 
