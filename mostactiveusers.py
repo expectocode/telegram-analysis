@@ -28,15 +28,20 @@ def main():
     #make filename just the name of the file, with no leading directories and no extension
 
     counter = defaultdict(int) #store events from each user
+    names = {} #dict
     total_datapoints = 0
 
     with open(filepath, 'r') as jsonfile:
         events = (loads(line) for line in jsonfile)
         for event in events:
-            if "from" and "text" in event:#ugly but don't know better
-                if "username" in event["from"]:
+            if "from" in event and "text" in event:#ugly but don't know better
+                if "peer_id" in event["from"] and "print_name" in event["from"]:
                     total_datapoints += len(event["text"])
-                    user = event["from"]["username"]
+                    user = event["from"]["peer_id"]
+                    #now make name for this ID the newest print name
+                    names[str(user)] = event["from"]["print_name"]
+                    if event["from"]["print_name"] == "":
+                        names[str(user)] = event["from"]["peer_id"]
                     counter[user] += len(event["text"])
 
     trimmedCounter = defaultdict(int)
@@ -45,10 +50,10 @@ def main():
     percentile = total_datapoints / 80 #anyone who contributes less than 1.125 percent of chars?
 
     for person, frequency in counter.items():
-        if frequency < percentile: # <3
+        if frequency < percentile:
             trimmedCounter["other"] += frequency
         else:
-            trimmedCounter[person] = frequency
+            trimmedCounter[names[str(person)]] = frequency
 
     sortedCounter = sorted(trimmedCounter.items(), key=itemgetter(1))
     print(sortedCounter)
