@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-A program to extract raw text from Telegram chat log which is in json form"
+A program to extract raw text from Telegram chat log which is in json form
 """
 import argparse
 from json import loads
