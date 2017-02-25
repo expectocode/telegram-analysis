@@ -38,8 +38,9 @@ def main():
             counter = defaultdict(int)
             #a dict with dates as keys and frequency as values
             for event in events:
-                day = date.fromtimestamp(event["date"])
-                counter[day] += 1
+                if "text" in event:
+                        day = date.fromtimestamp(event["date"])
+                        counter[day] += len(event["text"])
 
         _, temp = path.split(filepath)
         filenames.append(temp)
@@ -63,7 +64,7 @@ def main():
     else:
         plt.title("Activity in {}".format(filenames[0]))
 
-    plt.ylabel("Activity level (events per day)", size=14)
+    plt.ylabel("Activity level (chars per day)", size=14)
 
     if savefolder is not None:
     #if there is a given folder to save the figure in, save it there
