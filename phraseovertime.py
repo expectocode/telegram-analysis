@@ -97,7 +97,7 @@ def main():
             figname = input(
                 "This graph is going to have a very long file name. Please enter a custom name(no need to add an extension): ")
         else:
-            figname = "{} in {}.png".format(
+            figname = "{} in {}".format(
                 keywords_string, filename)
 
         plt.savefig("{}/{}.png".format(savefolder, figname))
