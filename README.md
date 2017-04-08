@@ -4,14 +4,14 @@ telegramAnalysis: Analyse Telegram chat logs easily
 A tool for working with the output of [telegram-history-dump](https://github.com/tvdstaaij/telegram-history-dump)
 
  - [Examples](#examples)
- - [Installation](#installation)
+ - [Installation](#installation-linux)
  - [Usage Guide](#usage-guide)
 
 Examples
 ---------------
 `venn_userlist.py`![Venn diagram example](/examples/venn_example.jpg?raw=true)
 `activityovertime.py`: ![Activity over time example chart](/examples/activityovertime_example.jpg?raw=true)
-``mostactiveusers.py`: ![Most active users example chart](/examples/mostactiveusers_example.jpg?raw=true) 
+``mostactiveusers.py`: ![Most active users example chart](/examples/mostactiveusers_example.jpg?raw=true)
 
 Installation (Linux)
 ---------------
@@ -34,10 +34,8 @@ Then, run telegram-cli with no commandline arguments and set it up with your acc
  1. Make sure you have Python 3 installed by running `python3`. If you don't have it, install Python 3 using your distro repos or the [official website](https://www.python.org/downloads/).
  1. If you want to use any of the graphical scripts, you need matplotlib. This will probably be in your distro repos as `python-matplotlib`, but you can also install with pip or from source. If you need more guidance, check out the [official site](http://matplotlib.org/users/installing.html).
  1. If you want to make venn diagrams, you need `matplotlib-venn`, which can be installed using pip. Check out the [github repo](https://github.com/konstantint/matplotlib-venn) for more information.
- 
+
 Once you have these things, you should be able to run all the analysis scripts!
-
-
 
 Usage Guide
 ---------------
@@ -73,25 +71,24 @@ ___
 - The same -o or --output-folder argument can be passed to `activityovertime`, `phraseovertime`, and `mostactiveusers`. This allows, for example, scripting these so that you run them on every chat and save all the outputs to a certain directory:
 `for file in json/*; do ./mostactiveusers.py --output-folder figures/ $file`
 
-
  - Find a rough percentage of users in a chat who send less than 3 messages:
  `./leastactiveusers.py /path/to/chatlog.jsonl`
- 
+
  Note that this script outputs a number which could be taken as a member-count of a chat, but is not. It's a bit complicated, just take this number with a pinch of salt.
 
  - Make a venn diagram showing the user overlap between two or three chats from chatlogs of those chats:
  `./venn_chatlog.py /path/to/chatlog1.jsonl /path/to/chatlog2.jsonl`
  Note that this script, due to a lack of data about people leaving in the chatlogs, will use a userlist of people who have *ever* been in a chat, not the actual current membership of a chat.
- 
+
  - Make a venn diagram showing the user overlap (of current membership) between two or three chats:
  - `./venn_userlist.py /path/to/memberlist.json "Chat Name 1" "Chat Name 2"`
  This script gives more accurate venn diagrams, but uses data which is not easy to get. The script to get this data might become open source in the future. Contact me for updated info on this.
 
  - Get a list of the chats you have userlists of:
  `./listchatsinmemberlist.py /path/to/memberlist.json`
- 
+
  - Graph the growth of a chat over time:
  `./usersovertime.py /path/to/chatlog.jsonl`
- Thanks to [NotAFile](https://github.com/NotAFile) for writing this one. 
- 
+ Thanks to [NotAFile](https://github.com/NotAFile) for writing this one.
+
  Note that as with other scripts that use chatlogs for member counts, this one has no ability to see users leaving, so the numbers will be wrong if you use it for that.
