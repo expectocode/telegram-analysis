@@ -1,4 +1,4 @@
-telegramAnalysis: Analyse Telegram chat logs easily
+telegram-analysis: Analyse Telegram chat logs easily
 =====================================
 
 A tool for working with the output of [telegram-history-dump](https://github.com/tvdstaaij/telegram-history-dump)
@@ -28,7 +28,7 @@ Next, I suggest filling out the telegram-history-dump config.yaml sections with 
 
 Then, run telegram-cli with no commandline arguments and set it up with your account - just a case of putting in your phone number and an auth code. Once that's set up, run telegram-cli --json -P 9009 and leave that terminal open. In another terminal, run the telegram-history-dump.rb script (it'll be in the folder where you cloned telegram-history-dump) and it'll start downloading your chatlogs.
 
-#### Installing telegramAnalysis
+#### Installing telegram-analysis
 
  1. Clone the repo.
  2. Make sure you have Python 3 installed by running `python3`. If you don't have it, install Python 3 using your distro repos or the [official site](https://www.python.org/downloads/).
