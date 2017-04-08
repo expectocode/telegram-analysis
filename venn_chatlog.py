@@ -13,7 +13,7 @@ def main():
     main function
     """
     parser = argparse.ArgumentParser(
-            description="Visualise the overlap between 2 or 3 chats \n but note that the program is not truly accurate as it counts users who have left to be part of a chat.")
+            description="Visualise the overlap between 2 or 3 chats \n but note that the program is not truly accurate as it counts users who have left to be part of a chat. Also note that for 3 chats, perfect geometry may be impossible.")
     parser.add_argument(
             'filepaths',
             help='paths to the json file(s) (chat logs) to analyse. Note these must be at the end of the arguments.',
@@ -31,7 +31,7 @@ def main():
         filenames.append(temp)
         filenames[filepaths.index(filepath)] , _ = path.splitext(
                 filenames[filepaths.index(filepath)] )
-   
+
         print(filenames[index], "users:")
 
         with open(filepath, 'r') as jsonfile:
@@ -49,16 +49,14 @@ def main():
         #print("len(users):",len(users))
         print(len(users[index]),"users")
 
-
     if len(users) == 2:
         venn2([set(users[0]), set(users[1])],(filenames[0], filenames[1]))
     elif len(users) == 3:
         venn3([set(users[0]), set(users[1]), set(users[2])],(filenames[0], filenames[1], filenames[2]))
 
     #print(users)
-        
-    plt.show()
 
+    plt.show()
 
 if __name__ == "__main__":
     main()

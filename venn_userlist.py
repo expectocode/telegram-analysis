@@ -12,7 +12,7 @@ def main():
     main function
     """
     parser = argparse.ArgumentParser(
-            description="Visualise the overlap between 2 or 3 chats")
+            description="Visualise the overlap between 2 or 3 chats. Note that for 3 chats, perfect geometry may be impossible.")
     parser.add_argument(
             'filepath',
             help='paths to the json userlist')
