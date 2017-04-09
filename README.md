@@ -6,6 +6,7 @@ A tool for working with the output of [telegram-history-dump](https://github.com
  - [Examples](#examples)
  - [Installation](#installation-linux)
  - [Usage Guide](#usage-guide)
+ - [Donations](#donations)
 
 Examples
 ---------------
@@ -84,3 +85,9 @@ ______
   Thanks to [NotAFile](https://github.com/NotAFile) for writing this one.
 
   Note that as with other scripts that use chatlogs for member counts, this one has no ability to see users leaving, so the numbers will be wrong if you use it for that.
+
+Donations
+-----
+If you like the project and have some bitcoin lying around, you're very welcome to send some to me here:
+
+1FaMHTtEKHg8tVbdzCuy1VkRdSVpssJu17
