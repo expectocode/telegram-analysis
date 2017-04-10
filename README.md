@@ -25,7 +25,7 @@ They both have install instructions but I'll give a short version here:
 
 - To install telegram-history-dump, clone the repo, ensure your ruby is version 2+, and you should be set.
 
-Next, I suggest editing the telegram-history-dump config.yaml chat sections (near the top of the file) with the names of the chats you want to get chatlogs of to start with, and putting 'null' in any empty chat sections. It's full of explanatory comments, so this shouldn't be too difficult.
+Next, I suggest editing the telegram-history-dump config.yaml chat sections (near the top of the file) with the names of the chats you want to get chatlogs of to start with, and putting 'null' in any empty chat sections. It's full of explanatory comments, so this shouldn't be too difficult. The rest of the config has some sensible defaults, and it's probably not worth changing them at this point. Another thing to keep in mind when writing the config file is that if you're putting in chat names, make sure there are no commas or square brackets in them. Also, consider using chat_ids instead of names, as names can change.
 
 Then, run `telegram-cli` with no commandline arguments and set it up with your account - just a case of putting in your phone number and an auth code. Once that's set up, run `telegram-cli --json -P 9009` and leave that terminal open. In another terminal, run the `telegram-history-dump.rb` script (it'll be in the folder where you cloned telegram-history-dump) and it'll start downloading your chatlogs.
 
