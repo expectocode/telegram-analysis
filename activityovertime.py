@@ -4,7 +4,7 @@ A program to plot the activity in a chat over time
 """
 import argparse
 from json import loads
-from datetime import date
+from datetime import date,timedelta
 from os import path
 from collections import defaultdict
 import matplotlib.pyplot as plt
@@ -17,7 +17,11 @@ def main():
             description="Visualise the activity of a chat over time")
     parser.add_argument(
             '-o', '--output-folder',
-            help='output the figure to image file in this folder')
+            help='the folder where the plot image will be saved')
+    parser.add_argument(
+            '-b', '--bin_size',
+            help='the number of days to group together. Higher number is more smooth graph, lower number is more spiky. Default = 3')
+            #negative bin size seems to just be like a size of 1. maybe add something to skip if binsize = 1
     parser.add_argument(
             'filepaths',
             help='paths to the json file(s) (chat logs) to analyse. Note these must be at the end of the arguments.',
@@ -26,6 +30,10 @@ def main():
     args = parser.parse_args()
     filepaths = args.filepaths
     savefolder = args.output_folder
+    if args.bin_size is not None:
+        binsize = int(args.bin_size)
+    else:
+        binsize = 3
 
     filenames = []
     plt.figure(figsize=(14,8))
@@ -42,14 +50,25 @@ def main():
                         day = date.fromtimestamp(event["date"])
                         counter[day] += len(event["text"])
 
+        if binsize > 1:
+            l = sorted(counter.items())
+            binnedcounter = defaultdict(int)
+            curbin = l[0][0]
+            for tup in l:
+                if tup[0] - curbin > timedelta(days=binsize):
+                    curbin = tup[0]
+                binnedcounter[curbin] += tup[1]
+        else:
+            binnedcounter = counter
+
         _, temp = path.split(filepath)
         filenames.append(temp)
         filenames[filepaths.index(filepath)] , _ = path.splitext(
                 filenames[filepaths.index(filepath)] )
-    #make filename just the name of the file,
-    # with no leading directories and no extension
+        #make filename just the name of the file,
+        # with no leading directories and no extension
 
-        frequencies = sorted(counter.items())
+        frequencies = sorted(binnedcounter.items())
         #find frequency of chat events per date
 
         plt.plot(*zip(*frequencies))
@@ -82,7 +101,7 @@ def main():
 
         plt.savefig("{}/{}.png".format(savefolder, figname))
     else:
-    #if a save folder was not specified, just open a window to display graph
+        #if a save folder was not specified, just open a window to display graph
         plt.show()
 
 if __name__ == "__main__":
