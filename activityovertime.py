@@ -14,21 +14,25 @@ def main():
     main function
     """
     parser = argparse.ArgumentParser(
-            description="Visualise the activity of a chat over time")
+            description="Visualise and compare the activity of one or more Telegram chats over time.")
+    required = parser.add_argument_group('required arguments')
+    #https://stackoverflow.com/questions/24180527/argparse-required-arguments-listed-under-optional-arguments
+    required.add_argument(
+            '-f', '--files',
+            help='paths to the json file(s) (chat logs) to analyse.',
+            required = True,
+            nargs='+'
+            )
     parser.add_argument(
             '-o', '--output-folder',
             help='the folder where the plot image will be saved')
     parser.add_argument(
-            '-b', '--bin_size',
-            help='the number of days to group together. Higher number is more smooth graph, lower number is more spiky. Default = 3')
-            #negative bin size seems to just be like a size of 1. maybe add something to skip if binsize = 1
-    parser.add_argument(
-            'filepaths',
-            help='paths to the json file(s) (chat logs) to analyse. Note these must be at the end of the arguments.',
-            nargs=argparse.REMAINDER)
+            '-b', '--bin-size',
+            help='the number of days to group together as one datapoint. Higher number is more smooth graph, lower number is more spiky. Default 3')
+            #and negative bin sizes are = 1
 
     args = parser.parse_args()
-    filepaths = args.filepaths
+    filepaths = args.files
     savefolder = args.output_folder
     if args.bin_size is not None:
         binsize = int(args.bin_size)
@@ -51,6 +55,7 @@ def main():
                         counter[day] += len(event["text"])
 
         if binsize > 1:
+            #this makes binsizes which are 1 or less act as if they are 1 (ie no binning)
             l = sorted(counter.items())
             binnedcounter = defaultdict(int)
             curbin = l[0][0]
