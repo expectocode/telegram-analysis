@@ -2,6 +2,7 @@
 """
 A program to plot the users joining a chat over time. Note that leaving events are not noted.
 TODO: support multiple chats.
+TODO: support saving to image
 """
 import argparse
 import os
