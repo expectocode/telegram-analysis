@@ -14,16 +14,21 @@ def main():
     parser = argparse.ArgumentParser(
             description="Visualise the overlap between 2 or 3 chats. Note that for 3 chats, perfect geometry may be impossible.")
     parser.add_argument(
-            'filepath',
-            help='paths to the json userlist')
+            '-f','--file',
+            help='paths to the json userlist',
+            required = True)
     parser.add_argument(
-            'chat_names',
-            help="Names of the chats you're interested in",
-            nargs='+')
+            '-c','--chat_names',
+            help="Names (or part of names) of the chats you're interested in, case insensitive",
+            nargs='+',
+            required = True)
+    parser.add_argument('-o', '--output-folder',
+            help='the folder to save the graph image in')
 
     args = parser.parse_args()
-    filepath = args.filepath
+    filepath = args.file
     names = args.chat_names
+    savefolder = args.output_folder
 
     full_names = []
     userlists = [[] for name in names]
@@ -76,7 +81,20 @@ def main():
 
     #print(users)
 
-    plt.show()
+    if savefolder is not None:
+    #if there is a given folder to save the figure in, save it there
+        names_string = '_'.join(full_names)
+
+        if len(names_string) > 200:
+        #file name likely to be so long as to cause issues
+            figname = input(
+                "This diagram is going to have a very long file name. Please enter a custom name(no need to add an extension): ")
+        else:
+            figname = 'User overlap in {}'.format(names_string).replace('/','_')
+
+        plt.savefig("{}/{}.png".format(savefolder, figname))
+    else:
+        plt.show()
 
 if __name__ == "__main__":
     main()
