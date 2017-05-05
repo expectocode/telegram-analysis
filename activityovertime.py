@@ -49,22 +49,30 @@ def main():
             #generator, so whole file is not put in mem
             counter = defaultdict(int)
             #a dict with dates as keys and frequency as values
-            for event in events:
-                if "text" in event:
+            if binsize > 1:
+                #this makes binsizes ! > 1 act as 1
+                for ind,event in enumerate(events):
+                    if ind==0 or (curbin - date.fromtimestamp(event['date']) > timedelta(days=binsize)):
+                        curbin=date.fromtimestamp(event['date'])
+                    if "text" in event:
+                        counter[curbin] += len(event["text"])
+            else:
+                for event in events:
+                    if "text" in event:
                         day = date.fromtimestamp(event["date"])
                         counter[day] += len(event["text"])
 
-        if binsize > 1:
-            #this makes binsizes which are 1 or less act as if they are 1 (ie no binning)
-            l = sorted(counter.items())
-            binnedcounter = defaultdict(int)
-            curbin = l[0][0]
-            for tup in l:
-                if tup[0] - curbin > timedelta(days=binsize):
-                    curbin = tup[0]
-                binnedcounter[curbin] += tup[1]
-        else:
-            binnedcounter = counter
+        #if binsize > 1:
+        #    #this makes binsizes which are 1 or less act as if they are 1 (ie no binning)
+        #    l = sorted(counter.items())
+        #    binnedcounter = defaultdict(int)
+        #    curbin = l[0][0]
+        #    for tup in l:
+        #        if tup[0] - curbin > timedelta(days=binsize):
+        #            curbin = tup[0]
+        #        binnedcounter[curbin] += tup[1]
+        #else:
+        #    binnedcounter = counter
 
         _, temp = path.split(filepath)
         filenames.append(temp)
@@ -73,7 +81,7 @@ def main():
         #make filename just the name of the file,
         # with no leading directories and no extension
 
-        frequencies = sorted(binnedcounter.items())
+        frequencies = sorted(counter.items())
         #find frequency of chat events per date
 
         plt.plot(*zip(*frequencies))
