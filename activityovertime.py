@@ -101,10 +101,7 @@ def main():
 
     if savefolder is not None:
     #if there is a given folder to save the figure in, save it there
-        chats_string = ""
-        for chat in filenames:
-            chats_string+=chat
-            chats_string+="_"
+        chats_string = '_'.join(filenames)
 
         if len(chats_string) > 200:
         #file name likely to be so long as to cause issues
