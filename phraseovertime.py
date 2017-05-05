@@ -20,7 +20,7 @@ def main():
             help='make the phrase search case sensitive',
             action='store_true')
     parser.add_argument('-o', '--output-folder',
-            help='output the figure to image file in this folder')
+            help='the folder to save the graph image in')
     parser.add_argument('-b', '--bin-size',
             help='the number of days to group together as one datapoint. Higher number is more smooth graph, lower number is more spiky. Default 3')
     required.add_argument('-f','--file',

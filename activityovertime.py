@@ -25,7 +25,8 @@ def main():
             )
     parser.add_argument(
             '-o', '--output-folder',
-            help='the folder where the plot image will be saved')
+            help='the foler to save the activity graph image in.'
+            'Using this option will make the graph not display on screen.')
     parser.add_argument(
             '-b', '--bin-size',
             help='the number of days to group together as one datapoint. Higher number is more smooth graph, lower number is more spiky. Default 3')

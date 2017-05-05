@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-A program to plot the most active users in a telegram chat, given a log
+A program to plot a pie chart of the most active users in a Telegram chat
 """
 import argparse
 from json import loads
@@ -13,14 +13,20 @@ def main():
     """
     main function
     """
-    parser = argparse.ArgumentParser(description="analyse a json output of a telegram backup utility")
+    parser = argparse.ArgumentParser(description=
+            "Create a pie chart showing the most active users in a Telegram chat")
+    required = parser.add_argument_group('required arguments')
     parser.add_argument(
             '-o', '--output-folder',
-            help='output the figure to image file in this folder')
-    parser.add_argument('filepath', help='the json file to analyse')
+            help='the folder to save the pie chart image in.'
+            'Using this option will make the graph not display on screen.')
+    required.add_argument('-f','--file',
+            help='the jsonl chatlog file to analyse',
+            required = True
+            )
 
     args = parser.parse_args()
-    filepath = args.filepath
+    filepath = args.file
     savefolder = args.output_folder
 
     _, filename = path.split(filepath)

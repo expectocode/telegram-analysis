@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-A program to extract raw text from Telegram chat log which is in json form
+A program to extract raw text from Telegram chat log
 """
 import argparse
 from json import loads
@@ -8,8 +8,8 @@ from json import loads
 def main():
 
     parser = argparse.ArgumentParser(
-            description="analyse a json output of telegram backup utility")
-    parser.add_argument('filepath', help='the json file to analyse')
+            description="Extract all raw text from a specific Telegram chat")
+    parser.add_argument('filepath', help='the json chatlog file to analyse')
 
     args=parser.parse_args()
     filepath = args.filepath
