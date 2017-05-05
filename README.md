@@ -55,14 +55,14 @@ ______
 
  - Get a pie chart of the most active users in a chat: `./mostactiveusers.py /path/to/chatlog.jsonl`
 
- - Get a graph of the usage of a particular phrase or phrases in a chat over time: `./phraseovertime.py /path/to/chatlog.jsonl "phrase1" "phrase2"`
+ - Get a graph of the usage of a particular phrase or phrases in a chat over time: `./phraseovertime.py -f /path/to/chatlog.jsonl -k "phrase1" "phrase2"`
 
  - Get a graph of the activity levels of a chat or chats over time:
-`./activityovertime.py /path/to/chatlog1.jsonl /path/to/chatlog2.jsonl`
+`./activityovertime.py -f /path/to/chatlog1.jsonl /path/to/chatlog2.jsonl`
 
- - Same as above, but instead of opening a window with the graph, save the graph as an image in a folder: `./activityovertime.py -o /output/folder/ /path/to/chatlog1.jsonl /path/to/chatlog2.jsonl`
+ - Same as above, but instead of opening a window with the graph, save the graph as an image in a folder: `./activityovertime.py -o /output/folder/ -f /path/to/chatlog1.jsonl /path/to/chatlog2.jsonl`
 
-  Note that the -o /output/folder must come before the chatlogs.
+  Note that the -o /output/folder must come before the chatlogs if there is no '-f' flag.
 
 - The same -o or --output-folder argument can be passed to `activityovertime`, `phraseovertime`, and `mostactiveusers`. This allows, for example, scripting these so that you run them on every chat and save all the outputs to a certain directory: `for file in json/*; do ./mostactiveusers.py --output-folder figures/ $file`
 
