@@ -34,7 +34,10 @@ def main():
     filepath = args.file
     keywords = args.keywords
     savefolder = args.output_folder
-    binsize = 3
+    if args.bin_size is not None:
+        binsize = int(args.bin_size)
+    else:
+        binsize = 3
 
     with open(filepath, 'r') as jsonfile:
         events = (loads(line) for line in jsonfile)
