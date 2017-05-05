@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
-A program to find a rough percentage of users in a chat who have sent less than 3 messages.
+A quick hack of a program to find a rough percentage of users in a chat who have sent less than 3 messages.
+
+Warning: written at 1AM
 """
 import argparse
 from json import loads
@@ -15,8 +17,8 @@ def main():
     minimum = 3
     non_active_users = 0
     active_users = 0
-    parser = argparse.ArgumentParser(description="Find the number of non-active users (users who have sent less than 3 messages) in a chat, given a JSON log.")
-    parser.add_argument('filepath', help='the json file to analyse')
+    parser = argparse.ArgumentParser(description="Find the number of inactive users (users who have sent less than 3 messages) in a Telegram chat")
+    parser.add_argument('filepath', help='the jsonl chatlog file to analyse')
 
     args = parser.parse_args()
     filepath = args.filepath
@@ -48,9 +50,9 @@ def main():
             #trimmedCounter[names[str(person)]] = frequency
             active_users += 1
 
-    print("For this chat, there were", non_active_users,
-        "users who sent less than", minimum, "messages, out of a total of",
-        non_active_users + active_users)
+    print('For this chat, there were {} users who sent less than'
+            ' {} messages, out of a total of {}.'.format(
+                non_active_users,minimum,non_active_users+active_users))
     print("That's", round(100* non_active_users/(non_active_users + active_users),1), "%!")
 
 #    print(type(*sorted(counter.items())))
