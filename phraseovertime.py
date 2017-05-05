@@ -25,14 +25,14 @@ def main():
             help='the number of days to group together as one datapoint. Higher number is more smooth graph, lower number is more spiky. Default 3')
     required.add_argument('-f','--file',
             help='path to the json file (chat log) to analyse')
-    required.add_argument('-k','--keywords',
-            help='the keyword(s) to search for',
+    required.add_argument('-p','--phrases',
+            help='the phrase(s) to search for',
             nargs='+',
             required = True)
 
     args = parser.parse_args()
     filepath = args.file
-    keywords = args.keywords
+    keywords = args.phrases
     savefolder = args.output_folder
     if args.bin_size is not None:
         binsize = int(args.bin_size)
