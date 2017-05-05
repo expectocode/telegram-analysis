@@ -47,29 +47,26 @@ ______
  - Get all the text from a chat and print to standard output (one line per message): `./getalltext.py /path/to/chatlog.jsonl`
 
  - Get all the text in a chat by a particular user and print to standard output (one line per message): ` ./getalltextfromuser.py /path/to/chatlog.jsonl username_without_at_sign `
-  (Note that usernames are case sensitive here)
 
  - Get all the text from a chat, and dump it into a text file: `./getalltext.py /path/to/chatlog.jsonl > somefile.txt`
 
- - You can combine a text-dumping with `mostcommonphrases.py` to get a list of the most commonly sent messages and their frequencies. For example, find what messages a user sends most often in a particular chat: `./getalltextfromuser.py /path/to/chatlog.jsonl username_without_at_sign| ./mostcommonphrases.py`
+ - You can combine a text-dumping with `mostcommonphrases.py` to get a list of the most commonly sent messages and their frequencies. For example, find what messages a user sends most often in a particular chat: `./getalltextfromuser.py /path/to/chatlog.jsonl username_without_at_sign | ./mostcommonphrases.py`
   `[['lol', 110], ['hmm', 68], ['hey', 23], etc etc]`
 
- - Get a pie chart of the most active users in a chat: `./mostactiveusers.py /path/to/chatlog.jsonl`
+ - Get a pie chart of the most active users in a chat: `./mostactiveusers.py -f /path/to/chatlog.jsonl`
 
- - Get a graph of the usage of a particular phrase or phrases in a chat over time: `./phraseovertime.py -f /path/to/chatlog.jsonl -k "phrase1" "phrase2"`
+ - Get a graph of the usage of a particular phrase or phrases in a chat over time: `./phraseovertime.py -f /path/to/chatlog.jsonl -p "phrase1" "phrase2"`
 
  - Get a graph of the activity levels of a chat or chats over time:
 `./activityovertime.py -f /path/to/chatlog1.jsonl /path/to/chatlog2.jsonl`
 
  - Same as above, but instead of opening a window with the graph, save the graph as an image in a folder: `./activityovertime.py -o /output/folder/ -f /path/to/chatlog1.jsonl /path/to/chatlog2.jsonl`
 
-  Note that the -o /output/folder must come before the chatlogs if there is no '-f' flag.
+- The same -o or --output-folder argument can be passed to `activityovertime`, `phraseovertime`, and `mostactiveusers`. This allows, for example, scripting these so that you run them on every chat and save all the outputs to a certain directory: `for file in json/*; do ./mostactiveusers.py --output-folder figures/ --file $file`
 
-- The same -o or --output-folder argument can be passed to `activityovertime`, `phraseovertime`, and `mostactiveusers`. This allows, for example, scripting these so that you run them on every chat and save all the outputs to a certain directory: `for file in json/*; do ./mostactiveusers.py --output-folder figures/ $file`
+ - Find a rough percentage of users in a chat who send less than 3 messages: `./inactiveusers.py /path/to/chatlog.jsonl`
 
- - Find a rough percentage of users in a chat who send less than 3 messages: `./leastactiveusers.py /path/to/chatlog.jsonl`
-
-  Note that this script outputs a number which could be taken as a member-count of a chat, but is not. It's a bit complicated, just take this number with a pinch of salt.
+  Note that this script outputs a number which could be taken as a member-count of a chat, but is not, because the chatlogs have no data about people leaving a chat.
 
  - Make a venn diagram showing the user overlap between two or three chats from chatlogs of those chats: `./venn_chatlog.py /path/to/chatlog1.jsonl /path/to/chatlog2.jsonl`
 
@@ -77,7 +74,7 @@ ______
 
  - Make a venn diagram showing the user overlap (of current membership) between two or three chats: `./venn_userlist.py /path/to/memberlist.json "Chat Name 1" "Chat Name 2"`
 
-  This script gives more accurate venn diagrams, but uses data which is not easy to get. The script to get this data might become open source in the future. Contact me for updated info on this.
+  This script gives more accurate venn diagrams, but uses data which is not easy to get. The script to get this data might become open source in the future.
 
  - Get a list of the chats you have userlists of: `./listchatsinmemberlist.py /path/to/memberlist.json`
 
