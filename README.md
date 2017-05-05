@@ -12,6 +12,7 @@ Examples
 ---------------
 `venn_userlist.py`: ![Venn diagram example](/examples/venn_example.jpg?raw=true)
 `activityovertime.py`: ![Activity over time example chart](/examples/activityovertime_example.jpg?raw=true)
+`phraseovertime.py`: ![Phrase over time example chart](/examples/phraseovertime_example.png?raw=true)
 `mostactiveusers.py`: ![Most active users example chart](/examples/mostactiveusers_example.jpg?raw=true)
 
 Installation (Linux)
