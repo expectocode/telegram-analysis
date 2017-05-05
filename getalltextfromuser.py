@@ -12,11 +12,11 @@ def main():
     parser.add_argument(
         'filepath', help='the json file to analyse')
     parser.add_argument(
-        'username', help='the username of the person whose text you want')
+        'username', help='the username of the person whose text you want, case insensitive')
 
     args=parser.parse_args()
     filepath = args.filepath
-    username = args.username
+    username = args.username.lower()
 
     user_id = ""
 
@@ -28,7 +28,7 @@ def main():
             if "from" in event and "text" in event:
                 if "username" in event["from"]:
                     #do i need "from" here?
-                    if event["from"]["username"] == username:
+                    if event["from"]["username"].lower() == username:
                         #print(event["text"])
                         print(event['from']['id'])
                         user_id = event['from']['id']
