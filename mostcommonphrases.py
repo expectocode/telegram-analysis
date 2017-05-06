@@ -31,7 +31,7 @@ Not recommended:
             action='store_true')
     parser.add_argument('-o', '--output-folder',
             help='the folder to save the bar chart image in.'
-            'Using this option will make the graph not display on screen.'
+            'Using this option will make the graph not display on screen. '
             'This option has no effect if -g/--graph is not specified.')
     parser.add_argument('-n','--number-of-phrases',
             help='The number of phrases to print. Default 20.',
@@ -39,6 +39,14 @@ Not recommended:
     parser.add_argument('-b','--number-of-bars',
             help='The number of bars to show on the bar chart (cannot be larger than number of phrases). Default 20.',
             type=int)
+    parser.add_argument(
+            '-s','--figure-size',
+            help='the size of the figure shown or saved (X and Y size). '
+            'Choose an appropriate value for your screen size. Default 14 8. '
+            'This option has no effect if -g/--graph is not specified.',
+            nargs=2,type=int
+            )
+
     args = parser.parse_args()
 
     number_of_phrases = args.number_of_phrases if (args.number_of_phrases is not None) else 20
@@ -54,6 +62,10 @@ Not recommended:
     else:
         #its not defined and neither is the other.
         number_of_bars = number_of_phrases
+    if args.figure_size is not None:
+        figure_size = (args.figure_size[0],args.figure_size[1])
+    else:
+        figure_size = (14,8)
 
     sortedfreqs = Counter(map(lambda x: x.rstrip().lower(),stdin)
             ) .most_common(number_of_phrases)
@@ -73,7 +85,7 @@ Not recommended:
         phrases,frequencies = list(zip(*sortedfreqs))
         y_pos = range(len(phrases))
         width = 0.6
-        plt.figure(figsize=(13,9))
+        plt.figure(figsize=figure_size)
         plt.bar([x*2 for x in y_pos],frequencies,align='center',width=width)
         plt.ylabel('frequency')
         plt.title('most common phrases')
@@ -83,6 +95,7 @@ Not recommended:
         plt.show()
     else:
         #show a warning message if they use a graph arg and theres no --graph
+        pass
 
 if __name__ == "__main__":
     main()

@@ -24,10 +24,20 @@ def main():
             help='the jsonl chatlog file to analyse',
             required = True
             )
+    parser.add_argument(
+            '-s','--figure-size',
+            help='the size of the figure shown or saved (X and Y size).'
+            'Choose an appropriate value for your screen size. Default 12 8.',
+            nargs=2,type=int
+            )
 
     args = parser.parse_args()
     filepath = args.file
     savefolder = args.output_folder
+    if args.figure_size is not None:
+        figure_size = (args.figure_size[0],args.figure_size[1])
+    else:
+        figure_size = (12,8)
 
     _, filename = path.split(filepath)
     filename, _ = path.splitext(filename)
@@ -66,7 +76,7 @@ def main():
 
     freqList = list(zip(*sortedCounter))
 
-    plt.figure(figsize=(12,8))
+    plt.figure(figsize=figure_size)
     plt.title("Most active users in {} by chars sent".format(filename), y=1.05)
     plt.pie(freqList[1], labels=freqList[0], startangle=135)
 #    plt.set_lw(10)

@@ -29,6 +29,12 @@ def main():
             help='the phrase(s) to search for',
             nargs='+',
             required = True)
+    parser.add_argument(
+            '-s','--figure-size',
+            help='the size of the figure shown or saved (X and Y size).'
+            'Choose an appropriate value for your screen size. Default 14 8.',
+            nargs=2,type=int
+            )
 
     args = parser.parse_args()
     filepath = args.file
@@ -38,6 +44,10 @@ def main():
         binsize = int(args.bin_size)
     else:
         binsize = 3
+    if args.figure_size is not None:
+        figure_size = (args.figure_size[0],args.figure_size[1])
+    else:
+        figure_size = (14,8)
 
     with open(filepath, 'r') as jsonfile:
         events = (loads(line) for line in jsonfile)
@@ -78,7 +88,7 @@ def main():
 
 #    frequencies = [{key: l.count(True)/l.count(False) * 100 for key, l in counter.items()}] #had to be moved to loop
     frequenciesList = []
-    plt.figure(figsize=(14,8)) #make a decent default size.
+    plt.figure(figsize=figure_size) #make a decent default size.
     for x in range(0, len(keywords)):
     #make a frequencies thing for each keyword, and plot each one onto the plot
         frequenciesList.append(

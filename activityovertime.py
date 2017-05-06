@@ -31,6 +31,12 @@ def main():
             '-b', '--bin-size',
             help='the number of days to group together as one datapoint. Higher number is more smooth graph, lower number is more spiky. Default 3')
             #and negative bin sizes are = 1
+    parser.add_argument(
+            '-s','--figure-size',
+            help='the size of the figure shown or saved (X and Y size).'
+            'Choose an appropriate value for your screen size. Default 14 8.',
+            nargs=2,type=int
+            )
 
     args = parser.parse_args()
     filepaths = args.files
@@ -39,9 +45,13 @@ def main():
         binsize = int(args.bin_size)
     else:
         binsize = 3
+    if args.figure_size is not None:
+        figure_size = (args.figure_size[0],args.figure_size[1])
+    else:
+        figure_size = (14,8)
 
     filenames = []
-    plt.figure(figsize=(14,8))
+    plt.figure(figsize=figure_size)
     #make a decent default size.
 
     for filepath in filepaths:
