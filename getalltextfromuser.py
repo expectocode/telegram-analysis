@@ -27,16 +27,13 @@ def main():
         events = (loads(line) for line in jsonfile)
         for event in events:
         #check the event is the sort we're looking for
-            if "from" in event and "text" in event:
+            if "from" in event:
                 if "username" in event["from"]:
-                    #do i need "from" here?
                     if event["from"]["username"].lower() == username:
-                        #print(event["text"])
-                        print(event['from']['id'])
                         user_id = event['from']['id']
                         break
     if user_id == "":
-        print("user not found")
+        print("username not found in chatlog")
         exit()
 
     with open(filepath, 'r') as jsonfile:
