@@ -20,7 +20,8 @@ def make_ddict(json_file,binsize):
     if binsize > 1:
         #this makes binsizes ! > 1 act as 1
         for ind,event in enumerate(events):
-            if ind==0 or (curbin - date.fromtimestamp(event['date']) > timedelta(days=binsize)):
+            if ind==0 or (
+                    curbin - date.fromtimestamp(event['date']) > timedelta(days=binsize)):
                 curbin=date.fromtimestamp(event['date'])
             if "text" in event:
                 counter[curbin] += len(event["text"])
@@ -34,7 +35,7 @@ def make_ddict(json_file,binsize):
 
 def make_ddict_in_date_range(json_file,binsize,start_stamp,end_stamp):
     """
-    return a defaultdict(int) of dates with activity on those dates
+    return a defaultdict(int) of dates with activity on those dates, in a date range
     """
     events = (loads(line) for line in json_file)
     #generator, so whole file is not put in mem
@@ -42,10 +43,11 @@ def make_ddict_in_date_range(json_file,binsize,start_stamp,end_stamp):
     #a dict with dates as keys and frequency as values
     if binsize > 1:
         #this makes binsizes ! > 1 act as 1
-        curbin = 0
+        curbin = 0 #just any value tbh
         for ind,event in enumerate(events):
             if int(event['date']) > start_stamp and int(event['date']) < end_stamp:
-                if curbin==0 or (curbin - date.fromtimestamp(event['date']) > timedelta(days=binsize)):
+                if curbin==0 or (
+                        curbin - date.fromtimestamp(event['date']) > timedelta(days=binsize)):
                     curbin=date.fromtimestamp(event['date'])
                 if "text" in event:
                     counter[curbin] += len(event["text"])
@@ -58,10 +60,7 @@ def make_ddict_in_date_range(json_file,binsize,start_stamp,end_stamp):
 
     return counter
 
-def main():
-    """
-    main function
-    """
+def parse_args():
     parser = argparse.ArgumentParser(
             description="Visualise and compare the activity of one or more Telegram chats over time.")
     required = parser.add_argument_group('required arguments')
@@ -91,12 +90,41 @@ def main():
             help='the range of dates you want to look at data between. '
             'Must be in format YYYY-MM-DD YYYY-MM-DD with the first date '
             'the start of the range, and the second the end. Example: '
-            '-d "2017-11-20 2017-05-15". Make sure you don\'t put a day '
+            "-d '2017-11-20 2017-05-15'. Make sure you don't put a day "
             'that is too high for the month eg 30th February.'
     )
 
-    args = parser.parse_args()
+    return parser.parse_args()
 
+def save_figure(folder,filenames):
+    chats_string = '_'.join(filenames)
+
+    if len(chats_string) > 200:
+    #file name likely to be so long as to cause issues
+        figname = input(
+            "This graph is going to have a very long file name. Please enter a custom name(no need to add an extension): ")
+    else:
+        figname = "Activity in {}".format(chats_string)
+
+    plt.savefig("{}/{}.png".format(folder, figname))
+
+def annotate_figure(filenames):
+    if len(filenames) > 1:
+        plt.title("Activity in {}".format(filenames))
+        plt.legend(filenames, loc='best')
+    else:
+        plt.title("Activity in {}".format(filenames[0]))
+
+    plt.ylabel("Activity level (chars per day)", size=14)
+
+def main():
+    """
+    main function
+    """
+
+    args = parse_args()
+
+    #set up args
     filepaths = args.files
     savefolder = args.output_folder
     if args.bin_size is not None:
@@ -117,53 +145,33 @@ def main():
         end_date = int(datetime.strptime(daterange[1], "%Y-%m-%d").strftime('%s'))
 
     filenames = []
-    plt.figure(figsize=figure_size)
-    #make a decent default size.
 
-    for filepath in filepaths:
+    plt.figure(figsize=figure_size)
+
+    for ind,filepath in enumerate(filepaths):
         with open(filepath, 'r') as jsonfile:
             if args.date_range is not None:
-                counter = make_ddict_in_date_range(
+                chat_counter = make_ddict_in_date_range(
                         jsonfile,binsize,start_date,end_date)
             else:
-                counter = make_ddict(jsonfile,binsize)
+                chat_counter = make_ddict(jsonfile,binsize)
 
-        _, temp = path.split(filepath)
-        filenames.append(temp)
-        filenames[filepaths.index(filepath)] , _ = path.splitext(
-                filenames[filepaths.index(filepath)] )
+        filenames.append(path.splitext(path.split(filepath)[-1])[0])
         #make filename just the name of the file,
         # with no leading directories and no extension
 
-        frequencies = sorted(counter.items())
+        chat_activity = sorted(chat_counter.items())
         #find frequency of chat events per date
 
-        plt.plot(*zip(*frequencies))
+        plt.plot(*zip(*chat_activity))
         plt.grid()
         #because i think it looks better with the grid
 
-    #end for
-
-    if len(filenames) > 1:
-        plt.title("Activity in {}".format(filenames))
-        plt.legend(filenames, loc='best')
-    else:
-        plt.title("Activity in {}".format(filenames[0]))
-
-    plt.ylabel("Activity level (chars per day)", size=14)
+    annotate_figure(filenames)
 
     if savefolder is not None:
     #if there is a given folder to save the figure in, save it there
-        chats_string = '_'.join(filenames)
-
-        if len(chats_string) > 200:
-        #file name likely to be so long as to cause issues
-            figname = input(
-                "This graph is going to have a very long file name. Please enter a custom name(no need to add an extension): ")
-        else:
-            figname = "Activity in {}".format(chats_string)
-
-        plt.savefig("{}/{}.png".format(savefolder, figname))
+        save_figure(savefolder,filenames)
     else:
         #if a save folder was not specified, just open a window to display graph
         plt.show()
