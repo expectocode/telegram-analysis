@@ -137,7 +137,7 @@ def main():
         figure_size = (14,8)
     if args.date_range is not None:
         if " " not in args.date_range:
-            print("Invalid date range")
+            print("You must put a space between start and end dates")
             exit()
         daterange = args.date_range.split()
         #using strftime('%s') is not portable. not great practice.
