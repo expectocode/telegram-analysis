@@ -74,7 +74,7 @@ def main():
             )
     parser.add_argument(
             '-o', '--output-folder',
-            help='the foler to save the activity graph image in.'
+            help='the folder to save the activity graph image in.'
             'Using this option will make the graph not display on screen.')
     parser.add_argument(
             '-b', '--bin-size',
