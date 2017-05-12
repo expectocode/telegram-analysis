@@ -4,15 +4,89 @@ A program to plot the popularity of a phrase in a chat over time
 """
 import argparse
 from json import loads
-from datetime import date,timedelta
+from datetime import date,datetime,timedelta
 from os import path
 from collections import defaultdict
 import matplotlib.pyplot as plt
 
-def main():
+def make_word_counters(jsonfile, keywords,binsize,case_sensitive):
     """
-    main function
+    return a list of defaultdict(list) of phrases over time.
+    Each phrase has a dict of True/False lists for each day or bin.
     """
+    events = (loads(line) for line in jsonfile)
+    #generator, so whole file is not put in mem
+    word_counters = [defaultdict(list) for keyword in keywords]
+
+    if binsize > 1:
+        curbin = 0
+        for ind,event in enumerate(events):
+            #if int(event['date']) > start_date and int(event['date']) < end_date:
+            if curbin == 0 or (
+                    curbin - date.fromtimestamp(event['date']) > timedelta(days=binsize)):
+                curbin=date.fromtimestamp(event['date'])
+            if "text" in event:
+                for k_ind,keyword in enumerate(keywords):
+                    if case_sensitive:
+                    #case sens or insens search for the keyword
+                        word_counters[k_ind][curbin].append(keyword in event["text"])
+                    else:
+                        word_counters[k_ind][curbin].append(
+                            "text" in event and keyword in event["text"].lower())
+    else:
+        for event in events:
+            if "text" in event:
+                for k_ind,keyword in enumerate(keywords):
+                    if args.case_sensitive:
+                    #case sens or insens search for the keyword
+                        day = date.fromtimestamp(event["date"])
+                        word_counters[k_ind][day].append(keyword in event["text"])
+                    else:
+                        day = date.fromtimestamp(event["date"])
+                        word_counters[k_ind][day].append(keyword in event["text"].lower())
+    return word_counters
+
+def make_word_counters_in_date_range(jsonfile, keywords,binsize,case_sensitive,d_start,d_end):
+    """
+    return a list of defaultdict(list) of phrases over time, in a specified date range.
+    Each phrase has a dict of True/False lists for each day or bin.
+    Date range specified with unix timestamps.
+    """
+    events = (loads(line) for line in jsonfile)
+    #generator, so whole file is not put in mem
+    word_counters = [defaultdict(list) for keyword in keywords]
+
+    if binsize > 1:
+        curbin = 0
+        for ind,event in enumerate(events):
+            #if int(event['date']) > start_date and int(event['date']) < end_date:
+            if int(event['date']) > d_start and int(event['date']) < d_end:
+                if curbin == 0 or (
+                        curbin - date.fromtimestamp(event['date']) > timedelta(days=binsize)):
+                    curbin=date.fromtimestamp(event['date'])
+                if "text" in event:
+                    for k_ind,keyword in enumerate(keywords):
+                        if case_sensitive:
+                        #case sens or insens search for the keyword
+                            word_counters[k_ind][curbin].append(keyword in event["text"])
+                        else:
+                            word_counters[k_ind][curbin].append(
+                                "text" in event and keyword in event["text"].lower())
+    else:
+        for event in events:
+            if int(event['date']) > d_start and int(event['date']) < d_end:
+                if "text" in event:
+                    for k_ind,keyword in enumerate(keywords):
+                        if args.case_sensitive:
+                        #case sens or insens search for the keyword
+                            day = date.fromtimestamp(event["date"])
+                            word_counters[k_ind][day].append(keyword in event["text"])
+                        else:
+                            day = date.fromtimestamp(event["date"])
+                            word_counters[k_ind][day].append(keyword in event["text"].lower())
+    return word_counters
+
+def parse_args():
     parser = argparse.ArgumentParser(
             description="Visualise and compare the usage of one or more words/phrases in a chat over time")
     required = parser.add_argument_group('required arguments')
@@ -35,72 +109,31 @@ def main():
             'Choose an appropriate value for your screen size. Default 14 8.',
             nargs=2,type=int
             )
+    parser.add_argument(
+            '-d','--date-range',
+            help='the range of dates you want to look at data between. '
+            'Must be in format YYYY-MM-DD YYYY-MM-DD with the first date '
+            'the start of the range, and the second the end. Example: '
+            "-d '2017-11-20 2017-05-15'. Make sure you don't put a day "
+            'that is too high for the month eg 30th February.'
+    )
+    return parser.parse_args()
 
-    args = parser.parse_args()
-    filepath = args.file
-    keywords = args.phrases
-    savefolder = args.output_folder
-    if args.bin_size is not None:
-        binsize = int(args.bin_size)
-    else:
-        binsize = 3
-    if args.figure_size is not None:
-        figure_size = (args.figure_size[0],args.figure_size[1])
-    else:
-        figure_size = (14,8)
-
-    with open(filepath, 'r') as jsonfile:
-        events = (loads(line) for line in jsonfile)
-        #generator, so whole file is not put in mem
-        counters = [defaultdict(list) for keyword in keywords]
-
-        if binsize > 1:
-            for ind,event in enumerate(events):
-                if ind==0 or (curbin - date.fromtimestamp(event['date']) > timedelta(days=binsize)):
-                    curbin=date.fromtimestamp(event['date'])
-                if "text" in event:
-                    for keyword in keywords:
-                        if args.case_sensitive:
-                        #case sens or insens search for the keyword
-                            counters[keywords.index(keyword)][curbin].append(
-                                "text" in event and keyword in event["text"])
-                        else:
-                            counters[keywords.index(keyword)][curbin].append(
-                                "text" in event and keyword in event["text"].lower())
-        else:
-            for event in events:
-                if "text" in event:
-                    for keyword in keywords:
-                        if args.case_sensitive:
-                        #case sens or insens search for the keyword
-                            day = date.fromtimestamp(event["date"])
-                            counters[keywords.index(keyword)][day].append(
-                                "text" in event and keyword in event["text"])
-                        else:
-                            day = date.fromtimestamp(event["date"])
-                            counters[keywords.index(keyword)][day].append(
-                                "text" in event and keyword in event["text"].lower())
-
-    _, filename = path.split(filepath)
-    filename, _ = path.splitext(filename)
-    #make filename just the name of the file,
-    # with no leading directories and no extension
-
-#    frequencies = [{key: l.count(True)/l.count(False) * 100 for key, l in counter.items()}] #had to be moved to loop
+def draw_figure(word_counters,keywords,figure_size):
     frequenciesList = []
-    plt.figure(figsize=figure_size) #make a decent default size.
-    for x in range(0, len(keywords)):
+    plt.figure(figsize=figure_size)
+    for x in range(len(keywords)):
     #make a frequencies thing for each keyword, and plot each one onto the plot
         frequenciesList.append(
-        {key: l.count(True)/len(l) * 100 for key, l in counters[x].items()})
-
+        {key: l.count(True)/len(l) * 100 for key, l in word_counters[x].items()})
         #find frequency of keyword use per date
         plt.plot(*zip(*sorted(frequenciesList[x].items())))
 
     plt.grid()
     #because i think it looks better with the grid
 
-    if args.case_sensitive:
+def annotate_figure(filename,keywords,case_sensitive):
+    if case_sensitive:
     #pretty self explanatory. this is added to the title.
         postfix=", case sensitive"
     else:
@@ -116,19 +149,62 @@ def main():
 
 #    plt.ylabel("Percentage of messages containing \"{}\"".format(keyword), size=14)
     plt.ylabel("Percentage of messages containing keywords", size=14)
+
+def save_figure(folder,filename,keywords):
+    keywords_string = '_'.join(keywords)
+    if len(keywords_string) > 200:
+    #file name likely to be so long as to cause issues
+        figname = input(
+            "This graph is going to have a very long file name. Please enter a custom name(no need to add an extension): ")
+    else:
+        figname = "{} in {}".format(
+            keywords_string, filename)
+
+    plt.savefig("{}/{}.png".format(folder, figname))
+
+def main():
+    """
+    main function
+    """
+
+    args = parse_args()
+    filepath = args.file
+    keywords = args.phrases
+    savefolder = args.output_folder
+    if args.bin_size is not None:
+        binsize = int(args.bin_size)
+    else:
+        binsize = 3
+    if args.figure_size is not None:
+        figure_size = (args.figure_size[0],args.figure_size[1])
+    else:
+        figure_size = (14,8)
+    if args.date_range is not None:
+        if " " not in args.date_range:
+            print("You must put a space between the start and end dates")
+            exit()
+        daterange = args.date_range.split()
+        #using strftime('%s') is not portable. not great practice.
+        start_date = int(datetime.strptime(daterange[0], "%Y-%m-%d").strftime('%s'))
+        end_date = int(datetime.strptime(daterange[1], "%Y-%m-%d").strftime('%s'))
+
+    with open(filepath, 'r') as jsonfile:
+        if args.date_range is not None:
+            word_counters = make_word_counters_in_date_range(
+                    jsonfile,keywords,binsize,args.case_sensitive,start_date,end_date)
+        else:
+            word_counters = make_word_counters(jsonfile,keywords,binsize,args.case_sensitive)
+
+    filename = path.splitext(path.split(filepath)[-1])[0]
+    #make filename just the name of the file,
+    # with no leading directories and no extension
+
+    draw_figure(word_counters,keywords,figure_size)
+    annotate_figure(filename,keywords,args.case_sensitive)
+
     if savefolder is not None:
     #if there is a given folder to save the figure in, save it there
-        keywords_string = '_'.join(keywords)
-
-        if len(keywords_string) > 200:
-        #file name likely to be so long as to cause issues
-            figname = input(
-                "This graph is going to have a very long file name. Please enter a custom name(no need to add an extension): ")
-        else:
-            figname = "{} in {}".format(
-                keywords_string, filename)
-
-        plt.savefig("{}/{}.png".format(savefolder, figname))
+        save_figure(savefolder,filename,keywords)
     else:
     #if a save folder was not specified, just open a window to display graph
         plt.show()
