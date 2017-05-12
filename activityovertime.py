@@ -4,10 +4,59 @@ A program to plot the activity in a chat over time
 """
 import argparse
 from json import loads
-from datetime import date,timedelta
+from datetime import date,timedelta,datetime
 from os import path
 from collections import defaultdict
 import matplotlib.pyplot as plt
+
+def make_ddict(json_file,binsize):
+    """
+    return a defaultdict(int) of dates with activity on those dates
+    """
+    events = (loads(line) for line in json_file)
+    #generator, so whole file is not put in mem
+    counter = defaultdict(int)
+    #a dict with dates as keys and frequency as values
+    if binsize > 1:
+        #this makes binsizes ! > 1 act as 1
+        for ind,event in enumerate(events):
+            if ind==0 or (curbin - date.fromtimestamp(event['date']) > timedelta(days=binsize)):
+                curbin=date.fromtimestamp(event['date'])
+            if "text" in event:
+                counter[curbin] += len(event["text"])
+    else:
+        for event in events:
+            if "text" in event:
+                day = date.fromtimestamp(event["date"])
+                counter[day] += len(event["text"])
+
+    return counter
+
+def make_ddict_in_date_range(json_file,binsize,start_stamp,end_stamp):
+    """
+    return a defaultdict(int) of dates with activity on those dates
+    """
+    events = (loads(line) for line in json_file)
+    #generator, so whole file is not put in mem
+    counter = defaultdict(int)
+    #a dict with dates as keys and frequency as values
+    if binsize > 1:
+        #this makes binsizes ! > 1 act as 1
+        curbin = 0
+        for ind,event in enumerate(events):
+            if int(event['date']) > start_stamp and int(event['date']) < end_stamp:
+                if curbin==0 or (curbin - date.fromtimestamp(event['date']) > timedelta(days=binsize)):
+                    curbin=date.fromtimestamp(event['date'])
+                if "text" in event:
+                    counter[curbin] += len(event["text"])
+    else:
+        for event in events:
+            if int(event['date']) > start_date and int(event['date']) < end_date:
+                if "text" in event:
+                    day = date.fromtimestamp(event["date"])
+                    counter[day] += len(event["text"])
+
+    return counter
 
 def main():
     """
@@ -37,8 +86,17 @@ def main():
             'Choose an appropriate value for your screen size. Default 14 8.',
             nargs=2,type=int
             )
+    parser.add_argument(
+            '-d','--date-range',
+            help='the range of dates you want to look at data between. '
+            'Must be in format YYYY-MM-DD YYYY-MM-DD with the first date '
+            'the start of the range, and the second the end. Example: '
+            '-d "2017-11-20 2017-05-15". Make sure you don\'t put a day '
+            'that is too high for the month eg 30th February.'
+    )
 
     args = parser.parse_args()
+
     filepaths = args.files
     savefolder = args.output_folder
     if args.bin_size is not None:
@@ -49,6 +107,14 @@ def main():
         figure_size = (args.figure_size[0],args.figure_size[1])
     else:
         figure_size = (14,8)
+    if args.date_range is not None:
+        if " " not in args.date_range:
+            print("Invalid date range")
+            exit()
+        daterange = args.date_range.split()
+        #using strftime('%s') is not portable. not great practice.
+        start_date = int(datetime.strptime(daterange[0], "%Y-%m-%d").strftime('%s'))
+        end_date = int(datetime.strptime(daterange[1], "%Y-%m-%d").strftime('%s'))
 
     filenames = []
     plt.figure(figsize=figure_size)
@@ -56,34 +122,11 @@ def main():
 
     for filepath in filepaths:
         with open(filepath, 'r') as jsonfile:
-            events = (loads(line) for line in jsonfile)
-            #generator, so whole file is not put in mem
-            counter = defaultdict(int)
-            #a dict with dates as keys and frequency as values
-            if binsize > 1:
-                #this makes binsizes ! > 1 act as 1
-                for ind,event in enumerate(events):
-                    if ind==0 or (curbin - date.fromtimestamp(event['date']) > timedelta(days=binsize)):
-                        curbin=date.fromtimestamp(event['date'])
-                    if "text" in event:
-                        counter[curbin] += len(event["text"])
+            if args.date_range is not None:
+                counter = make_ddict_in_date_range(
+                        jsonfile,binsize,start_date,end_date)
             else:
-                for event in events:
-                    if "text" in event:
-                        day = date.fromtimestamp(event["date"])
-                        counter[day] += len(event["text"])
-
-        #if binsize > 1:
-        #    #this makes binsizes which are 1 or less act as if they are 1 (ie no binning)
-        #    l = sorted(counter.items())
-        #    binnedcounter = defaultdict(int)
-        #    curbin = l[0][0]
-        #    for tup in l:
-        #        if tup[0] - curbin > timedelta(days=binsize):
-        #            curbin = tup[0]
-        #        binnedcounter[curbin] += tup[1]
-        #else:
-        #    binnedcounter = counter
+                counter = make_ddict(jsonfile,binsize)
 
         _, temp = path.split(filepath)
         filenames.append(temp)
