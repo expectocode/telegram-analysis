@@ -7,6 +7,27 @@ from json import loads
 from os import path
 import matplotlib.pyplot as plt
 from matplotlib_venn import venn2, venn3
+from collections import defaultdict
+
+def get_active_users(filepath):
+    minimum = 20
+    counter = defaultdict(int) #store events from each user
+    #names = {} #dict
+    active_users = set()
+
+    with open(filepath, 'r') as jsonfile:
+        events = (loads(line) for line in jsonfile)
+        for event in events:
+            if "from" in event:
+                if "id" in event["from"] and "print_name" in event["from"]:
+                    user = event['from']['id']
+                    counter[user] += 1
+
+    for person, frequency in counter.items():
+        if frequency > minimum:
+            active_users.add(person)
+
+    return active_users
 
 def main():
     """
@@ -17,7 +38,11 @@ def main():
     parser.add_argument(
             '-f','--files',
             help='paths to the json file(s) (chat logs) to analyse. Note these must be at the end of the arguments.',
-            nargs='+')
+            nargs='+',
+            required = True)
+    parser.add_argument('-a','--active-users',
+            help='Only look at active users (users who have sent more than 3 messages)',
+            action='store_true')
     parser.add_argument('-o', '--output-folder',
             help='the folder to save the graph image in')
 
@@ -26,7 +51,7 @@ def main():
     savefolder = args.output_folder
 
     filenames = []
-    users = [[] for filepath in filepaths]
+    users = [set() for filepath in filepaths]
     #create a list of users for each chat
 
     for index,filepath in enumerate(filepaths):
@@ -44,18 +69,22 @@ def main():
             for event in events:
                 if "action" in event and event["action"]["type"] == "chat_add_user":
                     #print(event['action']['user']['id'], ":", event['action']['user']['print_name'])
-                    users[index].append(event['action']['user']['id'])
+                    users[index].add(event['from']['id'])
                 elif "action" in event and event['action']['type'] == 'chat_add_user_link':
                     #print(event['from']['id'], ":", event['from']['print_name'])
-                    users[index].append(event['from']['id'])
+                    users[index].add(event['from']['id'])
         #print("index:",index)
         #print("len(users):",len(users))
+        if args.active_users:
+            active = get_active_users(filepath)
+            users[index] = users[index] & active
+
         print(len(users[index]),"users")
 
     if len(users) == 2:
-        venn2([set(users[0]), set(users[1])],(filenames[0], filenames[1]))
+        venn2([users[0], users[1]],(filenames[0], filenames[1]))
     elif len(users) == 3:
-        venn3([set(users[0]), set(users[1]), set(users[2])],(filenames[0], filenames[1], filenames[2]))
+        venn3([users[0], users[1], users[2]],(filenames[0], filenames[1], filenames[2]))
 
     #print(users)
 
