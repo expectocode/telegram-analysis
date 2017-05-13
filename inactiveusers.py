@@ -40,14 +40,10 @@ def main():
                     user = event['from']['peer_id']
                     counter[user] += 1
 
-    trimmedCounter = defaultdict(int)
-
     for person, frequency in counter.items():
         if frequency < minimum:
-            #trimmedCounter["other"] += frequency
             non_active_users += 1
         else:
-            #trimmedCounter[names[str(person)]] = frequency
             active_users += 1
 
     print('For this chat, there were {} users who sent less than'
