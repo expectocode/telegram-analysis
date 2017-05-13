@@ -10,6 +10,7 @@ def main():
     parser = argparse.ArgumentParser(
             description="Extract all raw text from a specific Telegram chat")
     parser.add_argument('filepath', help='the json chatlog file to analyse')
+    parser.add_argument('-u','--usernames', help='Show usernames before messages',action='store_true')
 
     args=parser.parse_args()
     filepath = args.filepath
@@ -19,6 +20,8 @@ def main():
         for event in events:
             #check the event is the sort we're looking for
             if "from" in event and "text" in event:
+                if args.usernames:
+                    print(event['from']['username'],end=': ')
                 #do i need the "from" here?
                 print(event["text"])
 
