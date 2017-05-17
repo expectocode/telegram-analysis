@@ -33,8 +33,7 @@ def main():
                 day = date.fromtimestamp(event["date"])
                 counter[day] += 1
 
-    _, filename = os.path.split(path)
-    filename, _ = os.path.splitext(filename)
+    filename = path.splitext(path.split(filepath)[-1])[0]
 
     #frequencies = {key: l.count(True)/l.count(False) * 100 for key, l in counter.items()}
     users_per_day = sorted(counter.items())
