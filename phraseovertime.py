@@ -26,8 +26,6 @@ def make_word_counters_in_range(jsonfile, keywords,binsize,case_sensitive,start,
     dates_and_texts = ((date,text) for (date,text) in dates_and_texts if
             date > start and date < end)
     word_counters = [defaultdict(list) for keyword in keywords]
-    #but the alternative is turning every message timestamp into a datetime,
-    #which is cpu expensive
 
     if binsize > 1:
         curbin = 0
