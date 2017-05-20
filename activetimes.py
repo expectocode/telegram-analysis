@@ -38,7 +38,7 @@ def parse_args():
     #https://stackoverflow.com/questions/24180527/argparse-required-arguments-listed-under-optional-arguments
     required.add_argument(
             '-f', '--file',
-            help='paths to the json file (chat logs) to analyse.',
+            help='paths to the json file (chat log) to analyse.',
             required = True
             )
     parser.add_argument(
@@ -71,20 +71,19 @@ def parse_args():
 
     return parser.parse_args()
 
-def save_figure(folder,filenames):
-    chats_string = '_'.join(filenames)
+def save_figure(folder,filename):
 
-    if len(chats_string) > 200:
+    if len(filename) > 200:
     #file name likely to be so long as to cause issues
         figname = input(
             "This graph is going to have a very long file name. Please enter a custom name(no need to add an extension): ")
     else:
-        figname = "Active hours in {}".format(chats_string)
+        figname = "Active hours in {}".format(filename)
 
     plt.savefig("{}/{}.png".format(folder, figname))
 
-def annotate_figure(filenames):
-    plt.title("Active hours in {}".format(filenames[0]))
+def annotate_figure(filename):
+    plt.title("Active hours in {}".format(filename))
     plt.ylabel("Activity level (chars)", size=14)
     plt.xlabel("Hour of the day", size=14)
     #sidenote: no idea what timezone lmao
@@ -117,28 +116,21 @@ def main():
     figure_size = args.figure_size
     start_date,end_date = get_dates(args.date_range)
 
-    filenames = []
+    filename = path.splitext(path.split(filepath)[-1])[0]
 
     plt.figure(figsize=figure_size)
-
 
     with open(filepath, 'r') as jsonfile:
        chat_counter = make_ddict_in_range(
               jsonfile,start_date,end_date)
 
-       filenames.append(path.splitext(path.split(filepath)[-1])[0])
-       #make filename just the name of the file,
-       # with no leading directories and no extension
-
-       #find frequency of chat events per date
-
        plt.bar(*zip(*chat_counter.items()))
 
-    annotate_figure(filenames)
+    annotate_figure(filename)
 
     if savefolder is not None:
     #if there is a given folder to save the figure in, save it there
-        save_figure(savefolder,filenames)
+        save_figure(savefolder,filename)
     else:
         #if a save folder was not specified, just open a window to display graph
         plt.show()
