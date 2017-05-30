@@ -22,9 +22,9 @@ def main():
     parser.add_argument('path', help='the json file (chat log) to analyse')
 
     args = parser.parse_args()
-    path = args.path
+    filepath = args.path
 
-    with open(path, 'r') as f:
+    with open(filepath, 'r') as f:
         events = (loads(line) for line in f)
 
         counter = defaultdict(int)
@@ -33,7 +33,7 @@ def main():
                 day = date.fromtimestamp(event["date"])
                 counter[day] += 1
 
-    filename = path.splitext(path.split(filepath)[-1])[0]
+    filename = os.path.splitext(os.path.split(filepath)[-1])[0]
 
     #frequencies = {key: l.count(True)/l.count(False) * 100 for key, l in counter.items()}
     users_per_day = sorted(counter.items())
