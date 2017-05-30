@@ -10,10 +10,14 @@ A tool for working with the output of [telegram-history-dump](https://github.com
 
 Examples
 ---------------
-`venn_userlist.py`: ![Venn diagram example](/examples/venn_example.jpg?raw=true)
-`activityovertime.py`: ![Activity over time example chart](/examples/activityovertime_example.jpg?raw=true)
-`phraseovertime.py`: ![Phrase over time example chart](/examples/phraseovertime_example.png?raw=true)
-`mostactiveusers.py`: ![Most active users example chart](/examples/mostactiveusers_example.jpg?raw=true)
+`venn_userlist.py`: compare user overlap between chats
+ ![Venn diagram example](/examples/venn_example.jpg?raw=true)
+`activityovertime.py`: compare activity in different chats through time
+![Activity over time example chart](/examples/activityovertime_example.jpg?raw=true)
+`phraseovertime.py`: compare popularity of different phrases in a chat through time
+![Phrase over time example chart](/examples/phraseovertime_example.png?raw=true)
+`mostactiveusers.py`: find who contributed the most to a chat
+![Most active users example chart](/examples/mostactiveusers_example.jpg?raw=true)
 
 Installation (Linux)
 ---------------
@@ -26,7 +30,7 @@ They both have install instructions but I'll give a short version here:
 
 - To install telegram-history-dump, clone the repo, ensure your ruby is version 2+, and you should be set.
 
-Next, I suggest editing the telegram-history-dump config.yaml chat sections (near the top of the file) with the names of the chats you want to get chatlogs of to start with, and putting 'null' in any empty chat sections. It's full of explanatory comments, so this shouldn't be too difficult. The rest of the config has some sensible defaults, and it's probably not worth changing them at this point. Another thing to keep in mind when writing the config file is that if you're putting in chat names, make sure there are no commas or square brackets in them. Also, consider using chat_ids instead of names, as names can change.
+Next, I suggest editing the telegram-history-dump config.yaml chat sections (near the top of the file) with the names of the chats you want to get chatlogs of to start with, and putting 'null' in any empty chat sections. As chatlogs can take a while to download, you might want to start with just a couple of them. It's full of explanatory comments, so this shouldn't be too difficult. The rest of the config has some sensible defaults, and it's probably not worth changing them at this point. Another thing to keep in mind when writing the config file is that if you're putting in chat names, make sure there are no commas or square brackets in them.  (Also, consider using chat_ids instead of names, as names can change).
 
 Then, run `telegram-cli` with no commandline arguments and set it up with your account - just a case of putting in your phone number and an auth code. Once that's set up, run `telegram-cli --json -P 9009` and leave that terminal open. In another terminal, run the `telegram-history-dump.rb` script (it'll be in the folder where you cloned telegram-history-dump) and it'll start downloading your chatlogs.
 
@@ -41,7 +45,9 @@ Once you have these things, you should be able to run all the analysis scripts!
 
 Usage Guide
 ---------------
-To start with, I recommend putting your json chatlogs in a folder with the scripts, so that your /path/to/chatlog.jsonl won't be a mess of relative path shenanigans.
+To start with, I recommend putting your json chatlogs in a folder with the scripts, so that your /path/to/chatlog.jsonl won't be a mess of relative path shenanigans. You can do this with the dumper's config.yaml file or by copying the files (the first is better long-term in my opinion).
+
+I recommend using the -h/--help option on all the scripts rather than reading this quick run-through of the scripts, as the help text will be more detailed and correct for your version.
 ______
 
  - Get all the text from a chat and print to standard output (one line per message): `./getalltext.py /path/to/chatlog.jsonl`
@@ -68,11 +74,11 @@ ______
 
   Note that this script outputs a number which could be taken as a member-count of a chat, but is not, because the chatlogs have no data about people leaving a chat.
 
- - Make a venn diagram showing the user overlap between two or three chats from chatlogs of those chats: `./venn_chatlog.py /path/to/chatlog1.jsonl /path/to/chatlog2.jsonl`
+ - Make a venn diagram showing the user overlap between two or three chats from chatlogs of those chats: `./venn_chatlog.py -f /path/to/chatlog1.jsonl /path/to/chatlog2.jsonl`
 
   Note that this script, due to a lack of data about people leaving in the chatlogs, will use a userlist of people who have *ever* been in a chat, not the actual current membership of a chat.
 
- - Make a venn diagram showing the user overlap (of current membership) between two or three chats: `./venn_userlist.py /path/to/memberlist.json "Chat Name 1" "Chat Name 2"`
+ - Make a venn diagram showing the user overlap (of current membership) between two or three chats: `./venn_userlist.py -f /path/to/memberlist.json -c "Chat Name 1" "Chat Name 2"`
 
   This script gives more accurate venn diagrams, but uses data which is not easy to get. The script to get this data might become open source in the future.
 
