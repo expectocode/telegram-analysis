@@ -112,7 +112,7 @@ def annotate_figure(filename,keywords,case_sensitive):
         #plt.legend(keywords[0])
 
 #    plt.ylabel("Percentage of messages containing \"{}\"".format(keyword), size=14)
-    plt.ylabel("Percentage of messages containing keywords", size=14)
+    plt.ylabel("Percentage of messages containing phrase", size=14)
 
 def save_figure(folder,filename,keywords):
     keywords_string = '_'.join(keywords)
