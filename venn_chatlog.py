@@ -10,7 +10,7 @@ from matplotlib_venn import venn2, venn3
 from collections import defaultdict
 
 def get_active_users(filepath):
-    minimum = 20
+    minimum = 3
     counter = defaultdict(int) #store events from each user
     #names = {} #dict
     active_users = set()
