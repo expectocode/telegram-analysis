@@ -26,8 +26,16 @@ def make_ddict_in_range(json_file,start,end):
     msg_infos = ((date,weekday,length) for (date,weekday,length) in msg_infos if date > start and date < end)
     counter = defaultdict(int)
     #a dict with days as keys and frequency as values
+    day_freqs = defaultdict(int)
     for date_text,day_text,length in msg_infos:
        counter[day_text] += length
+       day_freqs[day_text] += 1
+
+    for k,v in counter.items():
+        counter[k] = v/day_freqs[k]
+    #divide each day's activity by the number of times the day appeared.
+    #this makes the bar height = average chars sent on that day
+    #and makes the graph a more accurate representation, especially with small date ranges
 
     return counter
 
@@ -89,7 +97,7 @@ def annotate_figure(filename,start,end):
     else:
         datestr = "between {} and {}".format(start,end)
         plt.title("Active days in {}, {}".format(filename,datestr))
-    plt.ylabel("Activity level (chars)", size=14)
+    plt.ylabel("Activity level (avg. chars sent on day)", size=14)
     plt.xlabel("Day of the week", size=14)
     plt.gca().set_xlim([1,8])
     plt.xticks(([x+0.5 for x in range(8)]),['','Mon','Tue','Wed','Thu','Fri','Sat','Sun'])
