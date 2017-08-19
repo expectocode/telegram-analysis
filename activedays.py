@@ -23,7 +23,7 @@ def make_ddict_in_range(json_file,start,end):
     events = (loads(line) for line in json_file)
     #generator, so whole file is not put in mem
     msg_infos = (extract_info(event) for event in events if 'text' in event)
-    msg_infos = ((date,weekday,length) for (date,weekday,length) in msg_infos if date > start and date < end)
+    msg_infos = ((date,weekday,length) for (date,weekday,length) in msg_infos if date >= start and date <= end)
     counter = defaultdict(int)
     #a dict with days as keys and frequency as values
     day_freqs = defaultdict(int)

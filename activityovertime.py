@@ -22,7 +22,7 @@ def make_ddict_in_range(json_file,binsize,start,end):
     events = (loads(line) for line in json_file)
     #generator, so whole file is not put in mem
     dates_and_lengths = (extract_date_and_len(event) for event in events if 'text' in event)
-    dates_and_lengths = ((date,length) for (date,length) in dates_and_lengths if date > start and date < end)
+    dates_and_lengths = ((date,length) for (date,length) in dates_and_lengths if date >= start and date <= end)
     counter = defaultdict(int)
     #a dict with dates as keys and frequency as values
     if binsize > 1:

@@ -67,7 +67,7 @@ def make_ddict(jsonfile,start,end):
     total_datapoints = 0
     events = (loads(line) for line in jsonfile)
     messages = (extract_infos(event) for event in events if 'text' in event)
-    messages = ((when,what,uid,who) for (when,what,uid,who) in messages if when > start and when < end)
+    messages = ((when,what,uid,who) for (when,what,uid,who) in messages if when >= start and when <= end)
     for (msgdate,textlength,userid,printname) in messages:
         total_datapoints += textlength
         if str(userid) not in names:
