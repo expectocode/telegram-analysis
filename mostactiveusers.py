@@ -29,6 +29,12 @@ def parse_args():
             nargs=2,type=int,default = [12,8]
             )
     parser.add_argument(
+            '-m','--minimum-percentage',
+            help='the minimum percentage of activity a person must contribute '
+            'to get their own slice of the pie chart. Default 2',
+            type=float,default=2
+            )
+    parser.add_argument(
             '-d','--date-range',
             help='the range of dates you want to look at data between. '
             'Must be in format YYYY-MM-DD YYYY-MM-DD with the first date '
@@ -110,7 +116,8 @@ def main():
     savefolder = args.output_folder
     figure_size = (args.figure_size[0],args.figure_size[1])
     start_date,end_date = get_dates(args.date_range)
-    other_percent = 2
+    other_percent = args.minimum_percentage
+    #default 2
     #anyone who sends less than this percentage of the total is 'other'
 
     filename = path.splitext(path.split(filepath)[-1])[0]
